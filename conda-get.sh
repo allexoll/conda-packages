@@ -4,13 +4,22 @@ set -e
 
 CONDA_PATH=${1:-~/conda}
 
-echo "Downloading Conda installer."
-wget -c https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-chmod a+x Miniconda3-latest-Linux-x86_64.sh
+case $(uname -m) in
+i386|x86_64)
+	export HOST_ARCH="x86_64"
+;;
+arm64|aarch64)
+	export HOST_ARCH="aarch64"
+;;
+esac
+
+echo "Downloading Conda installer for ${HOST_ARCH}."
+wget -c https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-${HOST_ARCH}.sh
+chmod a+x Miniconda3-latest-Linux-${HOST_ARCH}.sh
 
 if [ ! -d $CONDA_PATH ]; then
 	echo "Installing conda"
-        ./Miniconda3-latest-Linux-x86_64.sh -p $CONDA_PATH -b -f
+        ./Miniconda3-latest-Linux-${HOST_ARCH}.sh -p $CONDA_PATH -b -f
 fi
 export PATH=$CONDA_PATH/bin:$PATH
 
